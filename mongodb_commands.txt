@@ -1,0 +1,106 @@
+// Create a database with the users of the following collection, tasks. Task schema ({_id, title, text, completed, created, updated}
+
+> use new_db_name
+
+//Create collection of users
+
+> db.createCollection('users')
+
+//inserting users
+
+> db.users.insert({ name: 'Luke', surname: 'Evans', age: 34, gender: 'male'})
+
+> db.users.insert({ name: 'Judy', surname: 'D', age: 21, gender: 'female'})
+
+> db.users.insert({ name: 'Monica', surname: 'Geller', age: 21, gender: 'female'})
+
+> db.users.insert({ name: 'Ross', surname: 'Geller', age: 23, gender: 'male'})
+
+> db.users.insert({ name: 'Joe', surname: 'Tribioni', age: 22, gender: 'male'})
+
+//display users collection
+
+> db.users.find({})
+
+{ "_id" : ObjectId("5e3929317278b9865af1a84b"), "name" : "Luke", "surname" : "Evans", "age" : 34, "gender" : "male" }
+{ "_id" : ObjectId("5e39296b7278b9865af1a84c"), "name" : "Judy", "surname" : "D", "age" : 21, "gender" : "female" }
+{ "_id" : ObjectId("5e3929d57278b9865af1a84d"), "name" : "Monica", "surname" : "Geller", "age" : 21, "gender" : "female" }
+{ "_id" : ObjectId("5e3929f97278b9865af1a84e"), "name" : "Ross", "surname" : "Geller", "age" : 23, "gender" : "male" }
+{ "_id" : ObjectId("5e392a207278b9865af1a84f"), "name" : "Joe", "surname" : "Tribioni", "age" : 22, "gender" : "male" }
+
+//Create collection of tasks
+
+> db.createCollection('tasks')
+
+//inserting users
+
+> db.tasks.insert({'title': 'work with DB', 'text': 'Hey', 'completed': true, 'created': Date.now(), 'updated': true, 'user': 'spiderman'})
+> db.tasks.insert({'title': 'work with DB', 'text': 'Hey 2', 'completed': false, 'created': Date.now(), 'updated': false, 'user': 'batman'})
+> db.tasks.insert({'title': 'work with DB', 'text': 'Hey 3', 'completed': true, 'created': Date.now(), 'updated': false, 'user': 'batman'})
+> db.tasks.insert({'title': 'work with DB', 'text': 'Hey 4', 'completed': false, 'created': Date.now(), 'updated': false, 'user': 'spiderman'})
+
+//display tasks collection
+
+> db.tasks.find({})
+
+{ "_id" : ObjectId("5e3938557278b9865af1a850"), "title" : "work with DB", "text" : "Hey", "completed" : true, "created" : 1580808277880, "updated" : true, "user" : "spiderman" }
+{ "_id" : ObjectId("5e393a387278b9865af1a851"), "title" : "work with DB", "text" : "Hey 2", "completed" : false, "created" : 1580808760472, "updated" : false, "user" : "batman" }
+{ "_id" : ObjectId("5e393a837278b9865af1a852"), "title" : "work with DB", "text" : "Hey 3", "completed" : true, "created" : 1580808835526, "updated" : false, "user" : "batman" }
+{ "_id" : ObjectId("5e393aba7278b9865af1a853"), "title" : "work with DB", "text" : "Hey 4", "completed" : false, "created" : 1580808890708, "updated" : false, "user" : "spiderman" }
+
+// Create update user’s name script for given _id
+
+> db.users.update({_id: ObjectId("5e3929317278b9865af1a84b")}, { $set: { name: "Chris" }})
+
+> db.users.find({"_id" : ObjectId("5e3929317278b9865af1a84b")})
+{ "_id" : ObjectId("5e3929317278b9865af1a84b"), "name" : "Chris", "surname" : "Evans", "age" : 34, "gender" : "male" }
+
+//Create get all users script (retrieving the only username) and sorted by username
+
+> db.users.find({}, {name: 1, _id: 0}).sort({ name: 1 })
+{ "name" : "Chris" }
+{ "name" : "Joe" }
+{ "name" : "Judy" }
+{ "name" : "Monica" }
+{ "name" : "Ross" }
+
+// Create a script that returns only female users
+
+> db.users.find({gender: 'female'})
+{ "_id" : ObjectId("5e39296b7278b9865af1a84c"), "name" : "Judy", "surname" : "D", "age" : 21, "gender" : "female" }
+{ "_id" : ObjectId("5e3929d57278b9865af1a84d"), "name" : "Monica", "surname" : "Geller", "age" : 21, "gender" : "female" }
+
+//Create a script to update all tasks completed = false
+
+> db.tasks.updateMany({}, { $set: {completed: false}})
+{ "acknowledged" : true, "matchedCount" : 4, "modifiedCount" : 2 }
+
+> db.tasks.find({})
+{ "_id" : ObjectId("5e3938557278b9865af1a850"), "title" : "work with DB", "text" : "Hey", "completed" : false, "created" : 1580808277880, "updated" : true, "user" : "spiderman" }
+{ "_id" : ObjectId("5e393a387278b9865af1a851"), "title" : "work with DB", "text" : "Hey 2", "completed" : false, "created" : 1580808760472, "updated" : false, "user" : "batman" }
+{ "_id" : ObjectId("5e393a837278b9865af1a852"), "title" : "work with DB", "text" : "Hey 3", "completed" : false, "created" : 1580808835526, "updated" : false, "user" : "batman" }
+{ "_id" : ObjectId("5e393aba7278b9865af1a853"), "title" : "work with DB", "text" : "Hey 4", "completed" : false, "created" : 1580808890708, "updated" : false, "user" : "spiderman" }
+
+// Create a script to delete all completed=true tasks
+	//make one task true completed
+> db.tasks.update({"_id" : ObjectId("5e393a387278b9865af1a851")}, { $set: {completed: true}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+>db.tasks.deleteMany({completed: true})
+{ "acknowledged" : true, "deletedCount" : 1 }
+
+//Create a script to get all tasks of user sorted by created date that are not completed.
+
+> db.tasks.find({user: 'batman', completed: false},{ _id: 0, title: 0}).sort({created: 1})
+{ "text" : "Hey 2", "completed" : false, "created" : 1580811953384, "updated" : false, "user" : "batman" }
+{ "text" : "Hey 3", "completed" : false, "created" : 1580811960279, "updated" : false, "user" : "batman" }
+
+
+
+
+
+
+
+
+
+
